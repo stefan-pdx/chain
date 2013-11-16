@@ -1,10 +1,10 @@
-# Chain # 
+# Chain #
 
 *Abusing `method_missing` since 2013*™
 
 ### What in the Sam Hill is Chain? ###
 
-Chain is a simple library that makes it (too) easy to interface with a (non)-RESTful web API. Inspired by [Her](https://github.com/remiprev/her/), I needed a way to create something that mimics an ORM to communicate with a non-RESTful API. Chain uses [Faraday](https://github.com/lostisland/faraday) as the client library to manage requests to API endpoints. As a result, you have full control of how the request is parsed out and mapped to an object in Ruby!
+Chain is a simple library that makes it (too) easy to interface with a (non)-RESTful web API. Inspired by [Her](https://github.com/remiprev/her/), I needed a way to create something that mimics an ORM to communicate with a non-RESTful API. Chain uses [Faraday](https://github.com/lostisland/faraday) as the client library to manage requests to API endpoints. As a result, you have full control of how the request and response are parsed out and mapped to an object in Ruby!
 
 ### How does it work? ###
 
@@ -13,7 +13,7 @@ Simply instantiate the `Url` class and then chain together a series of methods t
 ```ruby
 >> require 'chain'
 
->> site = Chain.Url("http://www.site.com")
+>> site = Chain::Url("http://www.site.com")
 
 >> item = site.items[1].group!
 => #Hashie::Mash of JSON from http://www.site.com/items/1/group
@@ -22,7 +22,7 @@ Simply instantiate the `Url` class and then chain together a series of methods t
 => "..."
 ```
 
-This opens up all sorts of clever way to iterate through an endpoint:
+This opens up all sorts of clever ways to iterate through an endpoint:
 
 ```ruby
 # Send a GET request to http://www.site.com/items
@@ -38,7 +38,7 @@ end
 
 ### Query Parameters ###
 
-You can specify query parameters via the `[]`, `_fetch`, or `_<insert http verb here>`. For example:
+You can specify query parameters via the `[]`, `_fetch`, or `_<insert your favorite http verb here>`. For example:
 
 ```ruby
 # Submit a GET request to http://www.site.com/users?name=Mark Corrigan
@@ -68,7 +68,7 @@ You can also manually specify the HTTP verb via `_method` and headers via `_head
 
 ### Configuring the Middleware ###
 
-By default, Chain will assume that the response is JSON and will render that object inside of a [Hashie Mash](https://github.com/intridea/hashie) object. If you want to implement your own, simply pass in a block to configure the Faraday connection:
+By default, Chain will assume that the response is JSON and will render that object inside of a [Hashie::Mash](https://github.com/intridea/hashie) object. If you want to implement your own request/response middleware, simply pass in a block to configure the Faraday connection:
 
 ```ruby
 site = Chain.Url("http://www.site.com") do |connection|
@@ -102,3 +102,5 @@ end
 3. For any urls that end with an extension, you will need to use the bracket notation. For example, site.users.json would render http://www.site.com/users/json.
 
 4. Any portions of the url path that contain characters not supported by Ruby, you will need to use the bracket notation. This includes path segments that start with numerics, such as http://www.site.com/users/0. (It cannot be rendered as `site.users.0`, but rather `site.users[0]`.)
+
+5. You will not be able to access URL sub-paths that have names similar to methods on standard objects in Ruby. For example, site.users[1].methods (http://www.site.com/users/1/methods) will return you a list of methods on the Chain::Url object. Use bracket notation!
