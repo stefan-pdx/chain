@@ -37,6 +37,9 @@ module Chain
     end
 
     def method_missing(method_name, path=nil, params={}, &block)
+      if path.is_a? Hash
+        path, params = nil, path.merge(params) 
+      end
 
       # If this is a bang method, prepare to run a _fetch.
       is_bang_method = method_name.to_s.chars.last == "!"
@@ -47,7 +50,10 @@ module Chain
       # should call into #{base}/api/items/My%20Item?f=json
       combined_path = [method_name, path].compact.join("/")
 
-      url = URI.join("#{@url}/", combined_path)
+      # If the combined_path is empty (i.e., we're just evaluating parameters from bracket
+      # notation), then we're just going to reuse the url Otherwise, assume that combined_path 
+      # appends onto the path.
+      url = combined_path.empty? ? @url : URI.join("#{@url}/", combined_path)
 
       self.class.new(url, @base_url || self, params, &block).tap do |request|
         return request._fetch(params, &block) if is_bang_method || !params.empty?
@@ -59,8 +65,7 @@ module Chain
         path, params = nil, path.merge(params) 
       end
 
-      url = [@url, path].compact.join("/")
-      method_missing(url, nil, **params)
+      method_missing(nil, path, **params)
     end
 
     def _fetch(params={}, &block)
