@@ -32,7 +32,7 @@ items = site.items!
 items.data.each do |item|
 
    # ...iterate through and print out the `name` attribute for http://www.site.com/items/#
-   puts items[item.id]!.name
+   puts items[item.id]._fetch.name
 end
 ```
 
