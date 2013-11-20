@@ -88,6 +88,14 @@ describe Chain::Url do
           should have_been_made
       end
 
+      it 'should generate a request if a hash is passed into a method' do
+        subject.item(foo: 'bar')
+
+        a_request(:get, 'http://test.com/item').
+          with(query: hash_including({'foo' => 'bar'})).
+          should have_been_made
+      end
+
       it 'should parse the _method parameter as the HTTP request type' do
         subject.item[_method: :post]._fetch
 
