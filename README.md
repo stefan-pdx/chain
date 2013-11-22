@@ -22,16 +22,16 @@ Simply instantiate the `Url` class and then chain together a series of methods t
 => "..."
 ```
 
-This opens up all sorts of clever ways to iterate through an endpoint:
+This opens up all sorts of clever ways to iterate through an endpoint. You can reuse objects and iterate through them multiple times.
 
 ```ruby
-# Send a GET request to http://www.site.com/items
-items = site.items!
+# Create a Chain::Url instance that is associated with http://www.site.com/items, but do not fetch it yet.
+items = site.items
 
 # Assuming that /items returns a JSON object containing a list of items in the `data` attribute...
-items.data.each do |item|
+items._fetch.data.each do |item|
 
-   # ...iterate through and print out the `name` attribute for http://www.site.com/items/#
+   # ...re-use the "items" object  to send a request to items/# and print out the `name` attribute
    puts items[item.id]._fetch.name
 end
 ```
@@ -81,7 +81,7 @@ end
 Writing your own middleware is fairly easy. Chain uses something along the lines of:
 
 ```ruby
-class HashieMashResponse < Faraday::Response::Middleware
+class MyResponseMiddleWare < Faraday::Response::Middleware
   def on_complete(env)
     body = JSON.parse(env[:body])
     headers = env[:response_headers]
