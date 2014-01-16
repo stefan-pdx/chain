@@ -4,8 +4,7 @@ module Chain
       def on_complete(env)
         case env[:status]
         when 200
-          body    = env[:body].to_s.encode('UTF-8', {invalid: :replace, undef: :replace, replace: '?'})
-
+          body    = env[:body]
           json    = JSON.parse(body)
           headers = env[:response_headers]
 
