@@ -13,7 +13,7 @@ Simply instantiate the `Url` class and then chain together a series of methods t
 ```ruby
 >> require 'chain'
 
->> site = Chain::Url("http://www.site.com")
+>> site = Chain::Url.new("http://www.site.com")
 
 >> item = site.items[1].group!
 => #Hashie::Mash of JSON from http://www.site.com/items/1/group
